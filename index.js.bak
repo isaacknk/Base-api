@@ -1,0 +1,382 @@
+
+bla = process.cwd() // NÃ£o mecha aqui..
+
+const express = require('express');
+
+const app = express();
+const PORT = 3000;
+var fs = require('fs')
+var fetch = require('node-fetch')
+var TinyUrl = require('tinyurl');
+var axios = require('axios')
+const path = require('path');
+var cheerio = require('cheerio');
+// Configurar a pasta 'public' como estática
+app.use(express.static('public'));
+
+// Rota principal redireciona para index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+var gerarnick = require('./lib/gerarnick.js')
+var { playstore, nerding } = require('./apis/scraper.js')
+var { PlayStoreSearch } = require('./lib/scraper/pesquisas.js')
+var { Estadao } = require('./lib/scraper/noticias.js')
+var key = JSON.parse(fs.readFileSync("./lib/secret/keys.json"));
+const users = JSON.parse(fs.readFileSync("./lib/secret/usuarios.json"));
+
+exports.fetchJson = fetchJson = (url, options) => new Promise(async (resolve, reject) => {
+fetch(url, options).then(response => response.json())
+ .then(json => {
+//console.log(json)
+resolve(json)
+}).catch((err) => {
+reject(err)
+})
+})
+
+async function getBuffer(url) {
+he = await fetch(url).then(c => c.buffer())
+ return he
+}
+
+async function Request(url) {
+he = await fetch(url).then(c => c.json())
+ return he
+}
+
+async function getBuffer(url) {
+he = await fetch(url)
+.then(c => c.buffer())
+return he
+}
+
+async function listkeys(apikey, req) {
+var i4 = key.map(i => i?.apikey)?.indexOf(apikey)
+if(i4 >= 0) {
+key[i4].request -= 2;
+fs.writeFileSync("./lib/secret/keys.json", JSON.stringify(key, null, 2));
+var IP = req.headers['x-real-ip'] || req.connection.remoteAddress || 0;
+var i3 = users.map(i => i.key).indexOf(apikey);
+if(i3 < 0 && !users.map(i => i.IP).includes(IP?.split(":")[3])){
+users.push({key: apikey, IP: [IP?.split(":")[3]]})
+fs.writeFileSync("./lib/secret/usuarios.json", JSON.stringify(users, null, 2));
+} else if(i3 >= 0 && !users[i3]?.IP.includes(IP?.split(":")[3])) {
+users[i3].IP.push(IP?.split(":")[3])
+fs.writeFileSync("./lib/secret/usuarios.json", JSON.stringify(users, null, 2));
+}}} 
+
+
+app.get('/api/keyerrada',(req, res) => {
+apikey = req.query.apikey;
+var ITC = key.map(i => i?.apikey)?.indexOf(apikey);
+if(ITC < 0) {
+return res.json({key:'Sua apikey é invalida Ou acabou as requets'})
+} else {return res.json({key:`Sua ApiKey está 100% ✅ - Requests Restantes: ${key[ITC]?.request}`})}})
+
+app.get('/api/add-key',(req, res) => {
+a = req.query.a
+if(!a.includes("&")) return res.json({resultado: "Faltando o and"})
+var [apikey, senha, rq] = a.split("&")
+var senhaofc = "lulu"
+if(senha != senhaofc) return res.json({resultado: "Senha invalida.."})
+if(!apikey) return res.json({resultado: "Kd a key.."})
+if(key.map(i => i.apikey).includes(apikey)) {
+return res.json({resultado: "Essa key já está inclusa dentro do sistema.."})
+} else {
+key.push({apikey: apikey, request: rq})
+fs.writeFileSync("./lib/secret/keys.json", JSON.stringify(key))
+var ITC = key.map(i => i?.apikey)?.indexOf(apikey);
+return res.json({resultado: `ApiKey: ${apikey} 
+Foi Adicionada ao Sistema\n🚀
+
+Numero de Requisições 
+
+Disponiveis: ${key[ITC]?.request}`})
+}
+})
+
+app.get('/api/del-key',(req, res) => {
+a = req.query.a
+if(!a.includes("&")) return res.json({msg: "Faltando o and"})
+var [apikey, senha] = a.split("&")
+var senhaofc = "lulu"
+if(senha != senhaofc) return res.json({msg: "Senha invalida.."})
+if(!apikey) return res.json({msg: "Kd a key.."})
+if(!key.map(i => i.apikey).includes(apikey)) {
+return res.json({msg: "Essa key não está inclusa.."})
+} else {
+var i2 = key.map(i => i.apikey).indexOf(apikey)
+key.splice(i2, 1)
+fs.writeFileSync("./lib/secret/keys.json", JSON.stringify(key))
+return res.json({msg: `apikey ${apikey} deletada com sucesso..`})
+}
+})
+
+app.get('/api/playstore', async(req, res, next) => {
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+nome = req.query.nome
+ if (!nome) return res.json({ status : false, criador : `SANDRO BOT`, mensagem : "Coloque o parametro: nome"})
+PlayStoreSearch(nome).then(data => {
+res.json({
+pesquisa: data
+})}).catch(e => {
+res.json({
+msg: `Erro no Servidor Interno`
+})})})
+
+app.get('/api/plaq',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://umethroo.sirv.com/Torcedora-da-sele%C3%A7%C3%A3o-brasileira-nua-mostrando-a-bunda-236x300.jpg?text.0.text=${textoo}&text.0.position.x=-64%25&text.0.position.y=-39%25&text.0.size=25&text.0.color=1b1a1a&text.0.font.family=Architects%20Daughter`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq1',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://raptibef.sirv.com/images%20(1).jpeg?profile=Zanga%202.0&text.0.text=${textoo}`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq2',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://raptibef.sirv.com/images.jpeg?profile=Zanga%203.0&text.0.text=${textoo}&text.0.outline.blur=63`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq3',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://umethroo.sirv.com/peito1.jpg?text.0.text=${textoo}&text.0.position.x=-4%25&text.0.position.y=-6%25&text.0.size=14&text.0.color=000000&text.0.font.family=Shadows%20Into%20Light&text.0.font.weight=700`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq4',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://clutamac.sirv.com/1011b781-bab1-49e3-89db-ee2c064868fa%20(1).jpg?text.0.text=${textoo}&text.0.position.gravity=northwest&text.0.position.x=22%25&text.0.position.y=60%25&text.0.size=12&text.0.color=000000&text.0.opacity=47&text.0.font.family=Roboto%20Mono&text.0.font.style=italic`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq5',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://umethroo.sirv.com/Torcedora-da-sele%C3%A7%C3%A3o-brasileira-nua-mostrando-a-bunda-236x300.jpg?text.0.text=${textoo}&text.0.position.x=-64%25&text.0.position.y=-39%25&text.0.size=25&text.0.color=1b1a1a&text.0.font.family=Architects%20Daughter`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq6',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://blackzin.sirv.com/Plaq18/20220212_213215.jpg?text.0.text=${textoo}&text.0.position.gravity=northwest&text.0.position.x=43%25&text.0.position.y=18%25&text.0.size=15&text.0.color=000000&text.0.opacity=57&text.0.font.family=Vollkorn&text.0.font.weight=800&text.0.font.style=italic&text.0.background.color=000000&text.0.outline.blur=32&text.0.outline.opacity=46&text.1.text=Sandro bot%3F&text.1.position.gravity=center&text.1.position.x=10%25&text.1.position.y=30%25&text.1.size=20&text.1.color=000000&text.1.opacity=59&text.1.font.family=Playball&text.1.font.weight=700&text.1.outline.opacity=0" width="718" height="1009" alt="" />`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq7',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://ubbornag.sirv.com/Screenshot_20210513-151821.png?text.0.text=${textoo}&text.0.position.x=-40%25&text.0.position.y=-65%25&text.0.size=30&text.0.color=000000&text.0.opacity=53&text.0.font.family=Shadows%20Into%20Light20Two&text.0.outline.blur=15`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/plaq8',async (req,res,next) => {
+var textoo = req.query.texto
+
+
+bala = await getBuffer(`https://lculitas.sirv.com/ETw3FRnXgAI3Up_.jpg?text.0.text=${textoo}&text.0.position.gravity=center&text.0.align=left&text.0.size=46&text.0.color=221b1b&text.0.opacity=47&text.0.font.family=Architects%20Daughter&text.0.background.color=783852&text.0.background.opacity=5&text.0.outline.blur=58`)
+res.type('jpg')
+res.send(bala)
+})
+
+app.get('/api/ttp',  async (req, res) => {
+texto = req.query.texto
+if(!texto)return res.json({
+status:false,
+msg:'Cade o parametro texto??'
+})
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+cor = ["f702ff","ff0202","00ff2e","efff00","00ecff","3100ff","ffb400","ff00b0","00ff95","efff00"] //CORES COLOQUE QUALQUER UMA MAS EM CODE
+fonte = ["Days%20One","Domine","Exo","Fredoka%20One","Gentium%20Basic","Gloria%20Hallelujah","Great%20Vibes","Orbitron","PT%20Serif","Pacifico"]//FONTS NÃO MEXA
+cores = cor[Math.floor(Math.random() * (cor.length))]	 				 
+fontes = fonte[Math.floor(Math.random() * (fonte.length))]	 		
+sitee = `https://huratera.sirv.com/PicsArt_08-01-10.00.42.png?profile=Example-Text&text.0.text=${texto}&text.0.outline.color=000000&text.0.outline.blur=0&text.0.outline.opacity=55&text.0.color=${cores}&text.0.font.family=${fontes}&text.0.background.color=ff0000`
+res.type('jpg')
+res.send(await getBuffer(sitee))
+})
+
+app.get('/nsfw/ass', async (req, res, next) => {
+	apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+	   
+    const ass = JSON.parse(fs.readFileSync(bla + '/data/ass.json'));
+    const randass = ass[Math.floor(Math.random() * ass.length)];
+    data = await fetch(randass).then(v => v.buffer())
+    await fs.writeFileSync(bla + '/tmp/ass.jpeg', data)
+    res.sendFile(bla + '/tmp/ass.jpeg')
+ 
+})
+
+app.get('/nsfw/cum', async (req, res, next) => {
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);		
+    const cum = JSON.parse(fs.readFileSync(bla + '/data/cum.json'));
+    const randcum = cum[Math.floor(Math.random() * cum.length)];
+    data = await fetch(randcum).then(v => v.buffer())
+    await fs.writeFileSync(bla + '/tmp/cum.jpeg', data)
+    res.sendFile(bla + '/tmp/cum.jpeg')
+})
+
+app.get('/nsfw/gangbang', async (req, res, next) => {
+      apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+    const gangbang = JSON.parse(fs.readFileSync(bla + '/data/gangbang.json'));
+    const randgangbang = gangbang[Math.floor(Math.random() * gangbang.length)];
+    data = await fetch(randgangbang).then(v => v.buffer())
+    await fs.writeFileSync(bla + '/tmp/gangbang.jpg', data)
+    res.sendFile(bla + '/tmp/gangbang.jpg')
+ 
+})
+
+app.get('/api/xnxxsearch', async(req, res, next) => {
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+q = req.query.q
+ if (!q) return res.json({ status : false, criador : `SANDRO BOT`, mensagem : "Coloque o parametro: q"})
+xnxxsearch(q).then(result => {
+res.json({
+status: true,
+código: 200,
+criador: `${criador}`,
+resultado: result
+})}).catch(e => {
+res.json({
+msg: `Erro no Servidor Interno`
+})})})
+
+app.get('/api/fazernick', async (req, res) => {
+  apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+let nome = req.query.nome || res.json({msg: 'insira o parâmetro: ?nome='})
+await gerarnick(nome)
+.then(nicks => {
+res.send(nicks) 
+}).catch(e => {
+res.json({erro:'Erro no Servidor Interno'})
+})
+})
+
+app.get('/random/metadinha', async (req, res, next) => {
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+         json = JSON.parse(fs.readFileSync(bla +'/lib/metadinha.json').toString())
+         random = json[Math.floor(Math.random() * json.length)]
+         res.json(random) 
+})
+
+app.get('/api/nerding', async (req, res, next) => {
+    try {
+        const apikey = req.query.apikey;
+        const q = req.query.q;
+
+        if (!apikey) return res.json({ resultado: 'Cade o parametro apikey?' });
+        if (!q) return res.json({ status: false, criador: 'SANDRO BOT', mensagem: "Coloque o parametro: q" });
+
+        if (!key || !Array.isArray(key)) return res.json({ erro: 'Erro no servidor: banco de keys não carregado' });
+
+        const keyIndex = key.findIndex(i => i?.apikey === apikey);
+        if (keyIndex === -1) return res.sendFile(path.join(__dirname, "./public/", "limited.html"));
+
+        if (key[keyIndex]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"));
+
+        await listkeys(apikey, req);
+
+        nerding(q)
+            .then(resultado => {
+                res.json({
+                    status: true,
+                    código: 200,
+                    criador: 'SANDRO BOT',
+                    resultado: resultado
+                });
+            })
+            .catch(e => {
+                console.error("Erro no nerding:", e);
+                res.json({ msg: "Erro no Servidor Interno" });
+            });
+
+    } catch (error) {
+        console.error("Erro interno:", error);
+        res.json({ msg: "Erro no Servidor Interno" });
+    }
+});
+
+app.get('/api/noticias/estadao', async(req, res, next) => {
+apikey = req.query.apikey
+if(key[key.map(i => i?.apikey)?.indexOf(apikey)]?.request <= 0) return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+if(!apikey)return res.json({resultado:'Cade o parametro apikey?'})
+if(!key.map(i => i.apikey)?.includes(apikey))return res.sendFile(path.join(__dirname, "./public/", "limited.html"))
+await listkeys(apikey, req);
+Estadao().then(data => {
+res.json({
+pesquisa: data
+})}).catch(e => {
+res.json({
+msg: `Erro no Servidor Interno`
+})})})
+
+// Usando as rotas de downloads
+app.use('/api/downloads.js', downloadsRouter);
+
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
+
+// Inicia o servidor
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});

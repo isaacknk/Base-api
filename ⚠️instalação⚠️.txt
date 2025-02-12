@@ -1,0 +1,15 @@
+________________________
+1: termux-setup-storage
+________________________
+2: cd /sdcard/base-api
+ou
+cd /sdcard/Download/base-api
+________________________
+3: sh instalar.sh
+________________________
+4: sh start.sh
+
+
+(Sobre)
+
+Uma base de uma api pra vocês começar a fazer seus projetos. 
