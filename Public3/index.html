@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANDRO API 1.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let deviceType = "PC";
+
+            if (userAgent.indexOf("android") !== -1) {
+                deviceType = "Android";
+            } else if (userAgent.indexOf("iphone") !== -1 || userAgent.indexOf("ipad") !== -1) {
+                deviceType = "iOS";
+            }
+
+            document.getElementById("device-info").innerHTML = `Dispositivo: ${deviceType}`;
+        }
+        window.onload = detectDevice;
+    </script>
+</head>
+<body>
+
+    <header>SANDRO API BASE</header>
+
+    <div class="content">
+        <div class="info-section">
+            <h2>O que é a API?</h2>
+            <p>Esta API fornece acesso a dados essenciais para seu projeto.</p>
+        </div>
+
+        <div class="info-section">
+            <h2>Seu Dispositivo</h2>
+            <p id="device-info">Detectando...</p>
+        </div>
+        
+        <div class="info-section">
+            <h2>Acesse a Documentação</h2>
+            <p>Veja como utilizar nossa API de forma eficiente.</p>
+            <a href="docs.html" id="docs-button">Acessar</a>
+        </div>
+        
+        <div class="info-section">
+            <h2>Painel Administrativo</h2>
+            <p>Gerencie chaves de acesso à API.</p>
+            <a href="admin.html" id="docs-button">Acessar</a>
+        </div>
+        
+        <div class="info-section">
+            <h2>Canal Oficial</h2>
+            <p>Acompanhe atualizações e novidades sobre a API.</p>
+            <a href="https://youtube.com/@sandro_mg1?si=-oXu6UfRZJy895Am" target="_blank">Visitar Canal</a>
+        </div>
+
+        <div class="info-section">
+            <h2>Vídeo recente</h2>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/N9GyG0m2MtY?si=KhUzhdGjMvjbIxim" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Formulário de Verificação da API Key -->
+        <div class="info-section">
+            <h2>Verifique sua API Key</h2>
+            <form action="/api/keyerrada">
+                <div class="card card-round mt-5 stretch-card grid-margin">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h4 class="m-0 font-weight-bold text-warning">
+                            <i class="mdi mdi-key"></i> Verifique se sua API Key é válida:
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="status" style="font-size: 17px;"></p>
+                        <div class="form-group">
+                            <input class="form-control font-weight-bold text-center" type="text" placeholder="DIGITE A KEY" name="apikey" required>
+                        </div>
+                        <div class="form-group">
+                            <center>
+                                <button type="submit" id="docs-button">
+                                    VERIFICAR
+                                </button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Sandro bot. Todos os direitos reservados.</p>
+        </div>
+    </div>
+
+</body>
+</html>
